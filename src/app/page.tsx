@@ -1,0 +1,28 @@
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import Button from '@/components/Button';
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="text-center"
+      >
+        <h1 className="text-5xl font-bold text-primary mb-4">
+          SchoolManagementSystem.com
+        </h1>
+        <p className="text-xl text-secondary mb-8">
+          Streamline your school operations with our powerful platform
+        </p>
+        <Link href="/signup">
+          <Button className="bg-primary text-white px-6 py-3 rounded-lg">
+            Get Started
+          </Button>
+        </Link>
+      </motion.div>
+    </div>
+  );
+}
