@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+'use client';
+import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
