@@ -1,4 +1,5 @@
-import { useState } from 'react';
+'use client';
+import { use, useState } from 'react';
 
 import { motion } from 'framer-motion';
 // ... rest of your code
