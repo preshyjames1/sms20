@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "firebase": "^12.1.0",
+    "firebase-admin": "^13.4.0",
     "framer-motion": "^12.23.12",
     "next": "15.5.0",
     "react": "19.1.0",
@@ -21,8 +22,10 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.15",
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
+    "postcss": "^8.4.31",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

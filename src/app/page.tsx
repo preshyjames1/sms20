@@ -1,15 +1,17 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Navbar from '@/components/Navbar';
 import Button from '@/components/Button';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-center"
+        className="text-center mt-16"
       >
         <h1 className="text-5xl font-bold text-primary mb-4">
           SchoolManagementSystem.com

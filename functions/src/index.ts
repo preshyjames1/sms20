@@ -1,9 +1,9 @@
-import * as functions from 'firebase-functions';
+import * as functions from 'firebase-functions/v1';  // Use /v1 for this trigger
 import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 
-export const createSchoolOnSignup = functions.auth.user().onCreate(async (user) => {
+export const createSchoolOnSignup = functions.auth.user().onCreate(async (user: admin.auth.UserRecord) => {
   const userDoc = {
     email: user.email,
     role: 'admin',
