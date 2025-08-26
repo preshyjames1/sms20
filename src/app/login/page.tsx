@@ -1,5 +1,7 @@
 import { useState } from 'react';
+
 import { motion } from 'framer-motion';
+// ... rest of your code
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import Link from 'next/link';

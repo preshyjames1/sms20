@@ -1,4 +1,6 @@
+'use client';
 import { motion } from 'framer-motion';
+// ... rest of your code
 
 export default function Dashboard({ params }: { params: { schoolId: string } }) {
   return (
