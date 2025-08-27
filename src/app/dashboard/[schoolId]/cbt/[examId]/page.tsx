@@ -13,22 +13,26 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
 
   // Fetch exam data
   useEffect(() => {
+    let isMounted = true; // To prevent state updates on unmounted component
+
     const fetchExam = async () => {
       try {
         const examDoc = await getDoc(doc(db, `schools/${params.schoolId}/cbtExams`, params.examId));
-        if (examDoc.exists()) {
+        if (examDoc.exists() && isMounted) {
           const data = examDoc.data() as CBTExam;
           setExam(data);
           setTimeLeft(data.duration * 60); // Convert minutes to seconds
-        } else {
+        } else if (isMounted) {
           setExam(null); // Handle case where exam doesn't exist
         }
       } catch (error) {
         console.error('Error fetching exam:', error);
-        setExam(null);
+        if (isMounted) setExam(null);
       }
     };
+
     fetchExam();
+    return () => { isMounted = false; }; // Cleanup on unmount
   }, [params.schoolId, params.examId]);
 
   // Timer logic
@@ -56,7 +60,7 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
     if (!exam) return;
 
     try {
-      const submissionRef = doc(db, `schools/${params.schoolId}/cbtSubmissions`, params.examId);
+      const submissionRef = doc(db, `schools/${params.schoolId}/cbtSubmissions`, `${params.examId}_${Date.now()}`); // Unique ID
       await setDoc(submissionRef, {
         examId: params.examId,
         schoolId: params.schoolId,
