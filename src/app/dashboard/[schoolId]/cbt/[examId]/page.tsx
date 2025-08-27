@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import Button from '@/components/Button';
 import type { CBTExam } from '@/lib/types';
 
@@ -11,21 +11,39 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
   const [answers, setAnswers] = useState<{ [key: string]: string }>({});
   const [timeLeft, setTimeLeft] = useState(0);
 
+  // Fetch exam data
   useEffect(() => {
     const fetchExam = async () => {
-      const examDoc = await getDoc(doc(db, `schools/${params.schoolId}/cbtExams`, params.examId));
-      if (examDoc.exists()) {
-        const data = examDoc.data() as CBTExam;
-        setExam(data);
-        setTimeLeft(data.duration * 60);
+      try {
+        const examDoc = await getDoc(doc(db, `schools/${params.schoolId}/cbtExams`, params.examId));
+        if (examDoc.exists()) {
+          const data = examDoc.data() as CBTExam;
+          setExam(data);
+          setTimeLeft(data.duration * 60); // Convert minutes to seconds
+        } else {
+          setExam(null); // Handle case where exam doesn't exist
+        }
+      } catch (error) {
+        console.error('Error fetching exam:', error);
+        setExam(null);
       }
     };
     fetchExam();
   }, [params.schoolId, params.examId]);
 
+  // Timer logic
   useEffect(() => {
     if (timeLeft > 0) {
-      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
+      const timer = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            handleSubmit(); // Auto-submit when time runs out
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
       return () => clearInterval(timer);
     }
   }, [timeLeft]);
@@ -35,8 +53,22 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
   };
 
   const handleSubmit = async () => {
-    // Save answers to Firestore (e.g., schools/{schoolId}/cbtSubmissions)
-    alert('Exam submitted!');
+    if (!exam) return;
+
+    try {
+      const submissionRef = doc(db, `schools/${params.schoolId}/cbtSubmissions`, params.examId);
+      await setDoc(submissionRef, {
+        examId: params.examId,
+        schoolId: params.schoolId,
+        answers,
+        submittedAt: Timestamp.now(),
+        userId: 'currentUserId', // Replace with actual user ID from auth
+      }, { merge: true });
+      alert('Exam submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting exam:', error);
+      alert('Failed to submit exam.');
+    }
   };
 
   if (!exam) return <p>Loading...</p>;
@@ -67,7 +99,9 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
           ))}
         </div>
       ))}
-      <Button onClick={handleSubmit}>Submit Exam</Button>
+      <Button onClick={handleSubmit} className="mt-4">
+        Submit Exam
+      </Button>
     </motion.div>
   );
 }
