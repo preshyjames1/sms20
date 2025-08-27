@@ -13,7 +13,7 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
 
   // Fetch exam data
   useEffect(() => {
-    let isMounted = true; // To prevent state updates on unmounted component
+    let isMounted = true;
 
     const fetchExam = async () => {
       try {
@@ -21,33 +21,24 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
         if (examDoc.exists() && isMounted) {
           const data = examDoc.data() as CBTExam;
           setExam(data);
-          setTimeLeft(data.duration * 60); // Convert minutes to seconds
+          setTimeLeft(data.duration * 60);
         } else if (isMounted) {
-          setExam(null); // Handle case where exam doesn't exist
+          setExam(null);
         }
       } catch (error) {
         console.error('Error fetching exam:', error);
         if (isMounted) setExam(null);
       }
     };
-
     fetchExam();
-    return () => { isMounted = false; }; // Cleanup on unmount
+    return () => {
+      isMounted = false;
+    };
   }, [params.schoolId, params.examId]);
 
-  // Timer logic
   useEffect(() => {
     if (timeLeft > 0) {
-      const timer = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            handleSubmit(); // Auto-submit when time runs out
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      const timer = setInterval(() => setTimeLeft((prev) => prev - 1), 1000);
       return () => clearInterval(timer);
     }
   }, [timeLeft]);
@@ -57,10 +48,8 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
   };
 
   const handleSubmit = async () => {
-    if (!exam) return;
-
     try {
-      const submissionRef = doc(db, `schools/${params.schoolId}/cbtSubmissions`, `${params.examId}_${Date.now()}`); // Unique ID
+      const submissionRef = doc(db, `schools/${params.schoolId}/cbtSubmissions`, `${params.examId}-${Date.now()}`);
       await setDoc(submissionRef, {
         examId: params.examId,
         schoolId: params.schoolId,
@@ -96,14 +85,13 @@ export default function CBTExam({ params }: { params: { schoolId: string; examId
                 value={option}
                 checked={answers[q.id] === option}
                 onChange={() => handleAnswer(q.id, option)}
-                className="mr-2"
-              />
+              />{' '}
               {option}
             </label>
           ))}
         </div>
       ))}
-      <Button onClick={handleSubmit} className="mt-4">
+      <Button onClick={handleSubmit} className="mt-8">
         Submit Exam
       </Button>
     </motion.div>
