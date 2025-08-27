@@ -1,5 +1,5 @@
 'use client';
-import { use, useState } from 'react';
+import { useState } from 'react';
 
 import { motion } from 'framer-motion';
 // ... rest of your code
@@ -19,15 +19,15 @@ export default function Login() {
   const router = useRouter();
   const { schoolId } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
       if (schoolId) {
         router.push(`/dashboard/${schoolId}`);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError((err as Error).message);
     }
   };
 

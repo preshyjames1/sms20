@@ -1,10 +1,11 @@
+'use server'; // Optional
 import Sidebar from '@/components/Sidebar';
 import { auth } from '@/lib/firebase';
 import { redirect } from 'next/navigation';
 
 export default async function DashboardLayout({
   children,
-  params,
+ 
 }: {
   children: React.ReactNode;
   params: { schoolId: string };

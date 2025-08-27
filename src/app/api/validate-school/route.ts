@@ -17,7 +17,7 @@ export async function GET(request: Request) {
     const userDoc = await getFirestore().collection('users').doc(decoded.uid).get();
     const user = userDoc.data();
     return NextResponse.json({ schoolId: user?.schoolId });
-  } catch (_error) {
+  } catch {
     return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
   }
 }

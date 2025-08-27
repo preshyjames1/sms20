@@ -1,4 +1,6 @@
 'use client';
+import { useState, useEffect } from 'react';
+
 import { motion } from 'framer-motion';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
@@ -6,10 +8,19 @@ import Link from 'next/link';
 import Button from '@/components/Button';
 import { CBTExam } from '@/lib/types';
 
-export default async function CBTDashboard({ params }: { params: { schoolId: string } }) {
-  const examsCol = collection(db, `schools/${params.schoolId}/cbtExams`);
-  const snapshot = await getDocs(examsCol);
-  const exams = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as CBTExam));
+export default function CBTDashboard({ params }: { params: { schoolId: string } }) {
+  const [exams, setExams] = useState<CBTExam[]>([]);
+
+  useEffect(() => {
+    const fetchExams = async () => {
+      const examsCol = collection(db, `schools/${params.schoolId}/cbtExams`);
+      const snapshot = await getDocs(examsCol);
+      const fetchedExams = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as CBTExam));
+      setExams(fetchedExams);
+    };
+
+    fetchExams();
+  }, [params.schoolId]);
 
   return (
     <motion.div
